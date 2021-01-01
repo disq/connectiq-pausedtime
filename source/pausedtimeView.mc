@@ -90,7 +90,7 @@ class pausedtimeView extends WatchUi.DataField {
 		var text;
 		if (days > 0) {
 		 	text = Lang.format("$1$:$2$:$3$:$4$", [days.format("%u"), hrs.format("%02u"), mins.format("%02u"), secs.format("%02u")]);
-	 	} else if (hours > 0) {
+	 	} else if (hrs > 0) {
 		 	text = Lang.format("$1$:$2$:$3$", [hrs.format("%02u"), mins.format("%02u"), secs.format("%02u")]);
 		} else {
 		 	text = Lang.format("$1$:$2$", [mins.format("%02u"), secs.format("%02u")]);
