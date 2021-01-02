@@ -6,7 +6,7 @@ class pausedtimeView extends WatchUi.DataField {
 	hidden var hasBackgroundColorOption = false;
 	hidden var mValue;
 
-	hidden var labelText, labelFont, labelPos;
+	hidden var labelText, labelPos;
 
 	// Use the first element if we're going to show "MM:(ss)", second one for "HH:MM:(ss)"
 	hidden var valuePos = [ [ 0, 0 ], [ 0, 0 ] ]; // Position for values (without seconds)
@@ -15,10 +15,11 @@ class pausedtimeView extends WatchUi.DataField {
 	hidden var fontIndex = 0;
 	hidden var canShowSeconds = false;
 
-	hidden var labelFonts = [ Graphics.FONT_SYSTEM_SMALL, Graphics.FONT_SYSTEM_SMALL, Graphics.FONT_SYSTEM_TINY ];
-	hidden var valueFonts = [ Graphics.FONT_SYSTEM_NUMBER_MEDIUM, Graphics.FONT_SYSTEM_NUMBER_MILD, Graphics.FONT_SYSTEM_SMALL ];
-	hidden var secondsFonts = [ Graphics.FONT_SYSTEM_NUMBER_MILD, Graphics.FONT_SYSTEM_SMALL, Graphics.FONT_SYSTEM_TINY ];
-	hidden var paddings = [ 6, 4, 2 ];
+	hidden var labelFont = Graphics.FONT_SYSTEM_SMALL;
+	hidden var valueFonts = [ Graphics.FONT_SYSTEM_NUMBER_HOT, Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD, Graphics.FONT_SYSTEM_SMALL ];
+	hidden var secondsFonts = [ Graphics.FONT_NUMBER_MILD, Graphics.FONT_NUMBER_MILD, Graphics.FONT_NUMBER_MILD, Graphics.FONT_SYSTEM_SMALL ];
+	hidden var secondsYdelta = [ -3, 1, 1, 0 ]; // Additional help for y-positioning of the seconds part
+	hidden var paddings = [ 6, 4, 2, 0 ]; // To determine if the font fits in the space horizontally or not
 
 	const VALUE_DISABLED = -1.0f;
 
@@ -38,10 +39,23 @@ class pausedtimeView extends WatchUi.DataField {
 
 		// Label things (except labelFont which is set below)
 		labelText = WatchUi.loadResource(Rez.Strings.label);
-		labelPos = [ halfWidth, 3 ];
+		labelPos = [ halfWidth, 3 ]; // This is shown as centered so no need adjust x position according to text width
+
+		var labelHeight = dc.getFontHeight(labelFont);
 
 		for (var i = 0; i < valueFonts.size(); i++) {
+			var textHeight = dc.getFontHeight(valueFonts[i]);
+
+			// Choose font using vertical space available first (since we have/need the textHeight anyway below)
+			// So that we can use the largest font if possible
+			var vSpaceLeft = height - textHeight - labelHeight;
+			if (vSpaceLeft <= 0) {
+				continue;
+			}
+
 			var textWidth = dc.getTextWidthInPixels("88:88", valueFonts[i]);
+
+			// Make sure it'll actually fit in horizontally
 			var spaceLeft = width - textWidth - paddings[i];
 			if (spaceLeft <= 0) {
 				continue;
@@ -50,13 +64,14 @@ class pausedtimeView extends WatchUi.DataField {
 			// Found our font, calculate positions
 			fontIndex = i;
 			var secondsWidth = dc.getTextWidthInPixels(":88", secondsFonts[i]);
-			var textHeight = dc.getFontHeight(valueFonts[i]);
+
+//			System.println("w/h " + width + "x" + height + " found font " + i + " tw " + textWidth + " sw " + secondsWidth);
 
 			// Positions for MM:(ss) first. Y pos doesn't change.
 			var halfWidth = dc.getTextWidthInPixels("88", valueFonts[i]);
 			valuePos[0] = [ Math.floor((width - halfWidth - secondsWidth) / 2), Math.floor((height - textHeight) / 2) + 14 ];
 
-			var secondsPosY = valuePos[0][1] - 7 + textHeight - dc.getFontHeight(secondsFonts[i]); // align seconds vertically to bottom of line
+			var secondsPosY = valuePos[0][1] + textHeight - dc.getFontHeight(secondsFonts[i]) + secondsYdelta[i]; // align seconds vertically to bottom of line
 			secondsPos[0] = [ valuePos[0][0] + halfWidth, secondsPosY ];
 
 			// Do HH:MM(:ss) this time
@@ -140,7 +155,7 @@ class pausedtimeView extends WatchUi.DataField {
 		dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);
 
 		// Label
-		dc.drawText(labelPos[0], labelPos[1], labelFonts[fontIndex], labelText, Graphics.TEXT_JUSTIFY_CENTER);
+		dc.drawText(labelPos[0], labelPos[1], labelFont, labelText, Graphics.TEXT_JUSTIFY_CENTER);
 
 		// Value
 		var posIdx = ignoreHours ? 0 : 1;
