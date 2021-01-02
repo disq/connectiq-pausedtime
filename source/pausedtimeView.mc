@@ -55,7 +55,9 @@ class pausedtimeView extends WatchUi.DataField {
 			// Positions for MM:(ss) first. Y pos doesn't change.
 			var halfWidth = dc.getTextWidthInPixels("88", valueFonts[i]);
 			valuePos[0] = [ Math.floor((width - halfWidth - secondsWidth) / 2), Math.floor((height - textHeight) / 2) + 14 ];
-			secondsPos[0] = [ valuePos[0][0] + halfWidth, valuePos[0][1] ];
+
+			var secondsPosY = valuePos[0][1] - 7 + textHeight - dc.getFontHeight(secondsFonts[i]); // align seconds vertically to bottom of line
+			secondsPos[0] = [ valuePos[0][0] + halfWidth, secondsPosY ];
 
 			// Do HH:MM(:ss) this time
 			canShowSeconds = (spaceLeft >= secondsWidth * 2); // spaceLeft includes space on both sides
@@ -64,7 +66,7 @@ class pausedtimeView extends WatchUi.DataField {
 			}
 
 			valuePos[1] = [ Math.floor((width - textWidth - secondsWidth) / 2), valuePos[0][1] ];
-			secondsPos[1] = [ valuePos[1][0] + textWidth, valuePos[0][1] ];
+			secondsPos[1] = [ valuePos[1][0] + textWidth, secondsPosY ];
 			break;
 		}
 
