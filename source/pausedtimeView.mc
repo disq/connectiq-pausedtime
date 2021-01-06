@@ -4,7 +4,7 @@ using Toybox.Graphics;
 class pausedtimeView extends WatchUi.DataField {
 
 	hidden var hasBackgroundColorOption = false;
-	hidden var mValue;
+	hidden var mValue, oldValue;
 
 	hidden var labelText, labelPos;
 
@@ -28,6 +28,7 @@ class pausedtimeView extends WatchUi.DataField {
 
 		hasBackgroundColorOption = (self has :getBackgroundColor);
 		mValue = VALUE_DISABLED;
+		oldValue = VALUE_DISABLED;
 	}
 
 	// Set your layout here. Anytime the size of obscurity of
@@ -95,6 +96,8 @@ class pausedtimeView extends WatchUi.DataField {
 	function compute(info) {
 		// See Activity.Info in the documentation for available information.
 
+		oldValue = mValue;
+
 		if (info == null || info.timerTime == null || info.elapsedTime == null) {
 			mValue = VALUE_DISABLED;
 		} else {
@@ -150,9 +153,16 @@ class pausedtimeView extends WatchUi.DataField {
 			}
 		}
 
-		dc.setColor(textColor, backgroundColor);
-		dc.clear();
-		dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);
+		if (mValue != VALUE_DISABLED && oldValue != VALUE_DISABLED && mValue > oldValue) {
+			// Invert colours if increasing
+			dc.setColor(backgroundColor, textColor);
+			dc.clear();
+			dc.setColor(backgroundColor, Graphics.COLOR_TRANSPARENT);
+		} else {
+			dc.setColor(textColor, backgroundColor);
+			dc.clear();
+			dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);
+		}
 
 		// Label
 		dc.drawText(labelPos[0], labelPos[1], labelFont, labelText, Graphics.TEXT_JUSTIFY_CENTER);
