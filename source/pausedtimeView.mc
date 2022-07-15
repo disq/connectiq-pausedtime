@@ -69,7 +69,7 @@ class pausedtimeView extends WatchUi.DataField {
 //			System.println("w/h " + width + "x" + height + " found font " + i + " tw " + textWidth + " sw " + secondsWidth);
 
 			// Positions for MM:(ss) first. Y pos doesn't change.
-			var halfWidth = dc.getTextWidthInPixels("88", valueFonts[i]);
+			halfWidth = dc.getTextWidthInPixels("88", valueFonts[i]);
 			valuePos[0] = [ Math.floor((width - halfWidth - secondsWidth) / 2), Math.floor((height - textHeight) / 2) + 14 ];
 
 			var secondsPosY = valuePos[0][1] + textHeight - dc.getFontHeight(secondsFonts[i]) + secondsYdelta[i]; // align seconds vertically to bottom of line
