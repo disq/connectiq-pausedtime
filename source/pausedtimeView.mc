@@ -86,7 +86,6 @@ class pausedtimeView extends WatchUi.DataField {
 			break;
 		}
 
-		return true;
 	}
 
 	// The given info object contains all the current workout information.
